@@ -1,0 +1,6 @@
+{
+  "_note": "Rosters the keyword rules cannot infer. A name decides what an act was: dinner with someone close is tending, not networking; a session with a client is reaching out; time with your own coach or mentor is taking in. Put real names in people.local.json, which is never committed.",
+  "close": ["Sam", "Mum", "Dad"],
+  "clients": [],
+  "mentors": ["Ana"]
+}

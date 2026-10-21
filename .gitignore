@@ -1,0 +1,12 @@
+# Personal content. data.json holds journal lines, calendar titles and names.
+# It must never reach GitHub.
+data.json
+*.local.json
+out/
+
+# Experiments drawn from real journal data.
+mockups/
+weekly/
+
+.DS_Store
+__pycache__/

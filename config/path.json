@@ -1,0 +1,25 @@
+{
+  "_note": "Words on the path page. Text can be a plain string, or {\"en\": ..., \"ko\": ...} when you list two languages. Put your own in path.local.json, which is never committed. Leave from/to out to use the whole extracted range.",
+  "title": "otter's path",
+  "from": "2026-01-05",
+  "to": "2026-03-01",
+  "languages": ["en"],
+  "status": "Eight weeks: a routine, a trip home, and a side project taking shape",
+  "question": "Am I making this for me, or for an audience?",
+  "legs": [
+    {"from": "2026-01-05", "to": "2026-01-25", "title": "Routine", "text": "Work, runs, a book club, and calls home."},
+    {"from": "2026-01-26", "to": "2026-02-06", "title": "Trip home", "text": "Twelve days with family. Hikes, long dinners, very little screen time."},
+    {"from": "2026-02-07", "to": "2026-03-01", "title": "Side project", "text": "Evenings go into building and writing. More people asked for feedback."}
+  ],
+  "questions": [
+    {"date": "2025-11-02", "text": "What do I want my days to feel like?"},
+    {"date": "2026-01-12", "text": "What would a slower week look like?"},
+    {"date": "2026-01-29", "text": "What do I miss when I am away?"},
+    {"date": "2026-02-15", "text": "Am I making this for me, or for an audience?"}
+  ],
+  "notes": [
+    "otter reads a daily journal and counts six flows in three facing pairs. Things done count: a workout record, a checked todo. Reflections do not move the line.",
+    "This is sample data for an invented person.",
+    "Nothing is scored. Wandering is not a warning, and the otter never wilts."
+  ]
+}

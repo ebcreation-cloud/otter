@@ -1,0 +1,89 @@
+{
+  "_note": "Wedge ids are referenced by the templates; keep them. Patterns are case-insensitive regular expressions, matched against each act. They mix English and Korean as an example of a bilingual journal; replace them with the words you actually write. Put your own version in taxonomy.local.json.",
+  "wedges": [
+    {
+      "id": "move",
+      "pair": "energy",
+      "side": "a",
+      "color": "#1F8A72"
+    },
+    {
+      "id": "still",
+      "pair": "energy",
+      "side": "b",
+      "color": "#5E7A8C"
+    },
+    {
+      "id": "absorb",
+      "pair": "exchange",
+      "side": "a",
+      "color": "#1989AC"
+    },
+    {
+      "id": "create",
+      "pair": "exchange",
+      "side": "b",
+      "color": "#C08A2E"
+    },
+    {
+      "id": "tend",
+      "pair": "people",
+      "side": "a",
+      "color": "#970747"
+    },
+    {
+      "id": "reach",
+      "pair": "people",
+      "side": "b",
+      "color": "#C4562C"
+    }
+  ],
+  "rules": [
+    {
+      "wedge": "still",
+      "pattern": "meditat|stretch|breath|massage|walk alone|nap|slept early|rest day|\\brest\\b|yoga|sauna|bath|명상|스트레칭|호흡|마사지|산책|낮잠|휴식|요가"
+    },
+    {
+      "wedge": "move",
+      "pattern": "pilates|reformer|golf|squat|lifting|deadlift|\\bgym\\b|workout|running|\\bran\\b|\\brun\\b|swim|cycl|bike|hike|hiking|tennis|climb|dance|필라테스|골프|헬스|러닝|달리기|수영|운동|등산"
+    },
+    {
+      "wedge": "absorb",
+      "pattern": "\\bread|book|podcast|youtube|video|lecture|class|course|study|learn|language|research|seminar|webinar|workshop|documentary|vocab|독서|책\\b|읽|강의|수업|공부|배우|리서치"
+    },
+    {
+      "wedge": "create",
+      "pattern": "\\bwrit|draft|blog|newsletter|publish|post(ed)?\\b|\\bmade\\b|\\bbuilt\\b|\\bbuild|app\\b|code|commit|script|prototype|design|sketch|paint|draw|cook(ed)? a new|recipe|knit|글쓰기|초안|블로그|발행|만들|만든|디자인"
+    },
+    {
+      "wedge": "tend",
+      "pattern": "partner|husband|wife|mum|mom|dad|parents|family|anniversary|birthday|called (mum|mom|dad)|dinner together|lunch together|cooked for|남편|아내|엄마|아빠|부모|가족|생일|기념일"
+    },
+    {
+      "wedge": "reach",
+      "pattern": "coaching|coach|client|session|first meeting|reach out|introduc|network|conference|meeting|coffee chat|catch up|meetup|book club|interview|email(ed)?|messaged|reply|proposal|invite|volunteer|코칭|클라이언트|세션|미팅|모임|인터뷰|연락|제안|초대"
+    }
+  ],
+  "contexts": [
+    {
+      "id": "work",
+      "pattern": "work|office|team|manager|colleague|project|deadline|report|onboarding|회사|업무|팀"
+    },
+    {
+      "id": "home",
+      "pattern": "partner|husband|wife|mum|mom|dad|family|groceries|cook|move house|renovat|이사|가족|요리|장보"
+    },
+    {
+      "id": "coaching",
+      "pattern": "coaching|coach|client|session|코칭|클라이언트|세션"
+    }
+  ],
+  "drop": {
+    "_note": "Calendar noise that is not an act: subscribed holidays, card payments, standing birthdays.",
+    "pattern": "holiday|christmas|new year|payment|birthday$|milestone"
+  },
+  "admin": {
+    "_note": "Things you did that belong to no flow: paperwork, logistics, errands. Counted and shown beside the wheel, never inside it, so admin cannot quietly inflate a wedge.",
+    "pattern": "booking|booked|appointment|delivery|paperwork|form|visa|insurance|tax|invoice|bank|grocer|laundry|clean(ed|ing)|packing|신청|예약|서류|비자|보험|청소|세탁"
+  }
+}

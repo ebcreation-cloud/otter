@@ -1,0 +1,450 @@
+<title>__TITLE__</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: the week 42 save-point card, stretched over fourteen weeks. Otter and status on top, the route across the six flows, then the stretches of the route and the questions. */
+:root {
+  --water: #e6eef0;
+  --deck: #f7fafa;
+  --ink: #17282d;
+  --muted: #5b7076;
+  --line: #c9d7da;
+  --pip: #2f6f7a;
+  --band: #d6e6e8;
+  --fur: #8a5a3b;
+  --fur-light: #c99a74;
+  --f-display: "Pixelify Sans", "Courier New", monospace;
+  --f-body: "Figtree", system-ui, -apple-system, sans-serif;
+  --f-data: "JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --water: #0f1c20; --deck: #15262b; --ink: #e3eef0; --muted: #93a9ae;
+    --line: #2d454b; --pip: #72b8c2; --band: #1f3a40; --fur: #b07a55; --fur-light: #dcb08c;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --water: #0f1c20; --deck: #15262b; --ink: #e3eef0; --muted: #93a9ae;
+  --line: #2d454b; --pip: #72b8c2; --band: #1f3a40; --fur: #b07a55; --fur-light: #dcb08c;
+  color-scheme: dark;
+}
+html[lang="ko"] {
+  --f-body: "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", system-ui, sans-serif;
+  --f-display: "Pixelify Sans", "Pretendard Variable", "Apple SD Gothic Neo", sans-serif;
+  --f-data: "JetBrains Mono", "Pretendard Variable", ui-monospace, monospace;
+}
+html[lang="ko"] .status, html[lang="ko"] h2, html[lang="ko"] h3, html[lang="ko"] .flow .name { font-weight: 700; }
+html[lang="ko"] body { word-break: keep-all; }
+* { box-sizing: border-box; }
+body {
+  background: var(--water); color: var(--ink);
+  font: 15px/1.55 var(--f-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 48px;
+}
+.card {
+  max-width: 760px; margin: 0 auto; background: var(--deck);
+  border: 2px solid var(--line); border-radius: 6px;
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px; padding: 24px clamp(16px, 4vw, 36px) 28px;
+}
+.card > * { min-width: 0; }
+.hud { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 6px 16px; }
+.logo { font: 700 1.6rem/1 var(--f-display); letter-spacing: .02em; margin: 0; }
+.save { font: 500 .78rem/1.3 var(--f-data); color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+.hud-right { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.lang { display: inline-flex; border: 1.5px solid var(--line); border-radius: 4px; overflow: hidden; }
+.lang button { font: 500 .74rem/1 var(--f-data); padding: 6px 9px; border: 0; background: transparent; color: var(--muted); cursor: pointer; }
+.lang button[aria-pressed="true"] { background: var(--pip); color: var(--deck); }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--pip); outline-offset: 2px; }
+
+.hero { display: grid; grid-template-columns: 200px 1fr; gap: 24px; align-items: center; }
+.hero > div { min-width: 0; }
+.otter { width: 100%; max-width: 200px; height: auto; display: block; }
+.otter .bob { animation: bob 4.5s ease-in-out infinite; transform-origin: 100px 70px; }
+@keyframes bob { 50% { transform: translateY(3px) rotate(-1.5deg); } }
+@media (prefers-reduced-motion: reduce) { .otter .bob { animation: none; } }
+.label { font: 500 .72rem/1 var(--f-data); text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin: 0 0 6px; }
+.status { font: 500 1.35rem/1.3 var(--f-display); margin: 0 0 18px; text-wrap: balance; }
+.question { font-size: 1.12rem; line-height: 1.45; margin: 0; text-wrap: balance; }
+
+h2 { font: 700 1rem/1.2 var(--f-display); margin: 0 0 4px; letter-spacing: .02em; }
+h3 { font: 700 .92rem/1.2 var(--f-display); margin: 0; letter-spacing: .02em; }
+.sub { color: var(--muted); font-size: .88rem; margin: 0 0 16px; max-width: 62ch; }
+
+/* the route */
+.map { width: 100%; max-width: 560px; height: auto; display: block; margin: 0 auto; }
+.map text { font-family: var(--f-display); font-weight: 700; font-size: 17px; fill: var(--ink); }
+.map .axis { stroke: var(--line); stroke-width: 1.5; stroke-dasharray: 3 5; fill: none; }
+.map .ring { stroke: var(--line); stroke-width: 1.5; fill: none; }
+.map .ghost { stroke: var(--line); stroke-width: 2; fill: none; stroke-linecap: round; }
+.map .trail { stroke: var(--pip); stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.map .day { fill: var(--pip); }
+.map .flag rect { fill: var(--deck); stroke: var(--ink); stroke-width: 1.5; }
+.map .flag text { font: 500 11px var(--f-data); fill: var(--ink); }
+.map .flag.ahead { opacity: .35; }
+
+.controls { display: flex; align-items: center; gap: 12px; margin-top: 8px; }
+.controls input { flex: 1; min-width: 0; accent-color: var(--pip); }
+.btn { font: 500 .78rem/1 var(--f-data); padding: 8px 12px; border: 1.5px solid var(--pip); border-radius: 4px; background: transparent; color: var(--pip); cursor: pointer; text-transform: uppercase; letter-spacing: .06em; }
+.btn:hover { background: var(--band); }
+.readout { display: flex; flex-wrap: wrap; gap: 4px 16px; align-items: baseline; margin-top: 12px; padding: 10px 12px; border: 1.5px dashed var(--line); border-radius: 4px; }
+.readout time { font: 500 .8rem/1.3 var(--f-data); color: var(--ink); }
+.readout .counts { font: 400 .78rem/1.3 var(--f-data); color: var(--muted); font-variant-numeric: tabular-nums; }
+
+/* stretches */
+.legs { display: grid; gap: 18px; }
+.leg { display: grid; gap: 8px; padding-top: 14px; border-top: 2px solid var(--line); }
+.leg-head { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 4px 12px; }
+.leg-head time { font: 500 .74rem/1 var(--f-data); color: var(--muted); }
+.leg p { margin: 0; font-size: .9rem; max-width: 62ch; }
+.pairs { display: grid; gap: 6px; }
+.pair { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.flow { padding: 4px 12px; min-width: 0; }
+.flow.left { border-right: 2px solid var(--line); }
+.flow .name { font: 700 .82rem/1 var(--f-display); display: flex; gap: 8px; align-items: baseline; }
+.flow.left .name { justify-content: flex-end; }
+.flow .count { font: 500 .74rem/1 var(--f-data); color: var(--muted); font-variant-numeric: tabular-nums; }
+.pips { display: flex; gap: 3px; margin-top: 6px; height: 9px; }
+.flow.left .pips { flex-direction: row-reverse; }
+.pip { flex: 1 1 0; min-width: 0; height: 9px; border: 1.5px solid var(--line); border-radius: 2px; }
+.pip.on { background: var(--pip); border-color: var(--pip); }
+
+.qs { list-style: none; margin: 0; padding: 0 0 0 14px; border-left: 2px dashed var(--line); display: grid; gap: 12px; }
+.qs li { display: grid; gap: 2px; }
+.qs time { font: 500 .74rem/1 var(--f-data); color: var(--muted); }
+.qs .mark { font: 500 .7rem/1 var(--f-data); color: var(--pip); margin-right: 6px; }
+.qs li.now q { font-weight: 600; }
+q { quotes: none; }
+
+.rules { border-top: 2px solid var(--line); padding-top: 18px; display: grid; gap: 6px; font-size: .84rem; color: var(--muted); }
+.rules p { margin: 0; max-width: 66ch; }
+
+@media (max-width: 560px) {
+  .hero { grid-template-columns: 1fr; justify-items: start; gap: 12px; }
+  .otter { max-width: 150px; }
+  .flow { padding: 4px 8px; }
+}
+</style>
+
+<main class="card">
+  <header class="hud">
+    <p class="logo">otter</p>
+    <div class="hud-right">
+      <span class="save" id="dates"></span>
+      <div class="lang" id="langs" role="group" aria-label="Language">
+        <button type="button" id="lang-en" data-lang="en">EN</button>
+        <button type="button" id="lang-ko" data-lang="ko">한</button>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <svg class="otter" viewBox="0 0 200 130" role="img" aria-label="otter">
+      <path d="M0 92 Q25 84 50 92 T100 92 T150 92 T200 92 V130 H0 Z" fill="var(--band)"/>
+      <g class="bob">
+        <ellipse cx="100" cy="82" rx="58" ry="17" fill="var(--fur)"/>
+        <ellipse cx="96" cy="78" rx="34" ry="9" fill="var(--fur-light)"/>
+        <path d="M156 84 Q178 80 186 70 Q176 88 154 90 Z" fill="var(--fur)"/>
+        <circle cx="46" cy="70" r="20" fill="var(--fur)"/>
+        <ellipse cx="40" cy="76" rx="11" ry="8" fill="var(--fur-light)"/>
+        <circle cx="34" cy="55" r="5" fill="var(--fur)"/>
+        <circle cx="56" cy="53" r="5" fill="var(--fur)"/>
+        <path d="M37 66 q3 -3 6 0 M50 64 q3 -3 6 0" stroke="var(--ink)" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <ellipse cx="43" cy="74" rx="3" ry="2" fill="var(--ink)"/>
+        <ellipse cx="84" cy="68" rx="7" ry="5" fill="var(--fur)"/>
+        <ellipse cx="104" cy="68" rx="7" ry="5" fill="var(--fur)"/>
+        <rect x="86" y="58" width="16" height="11" rx="2" fill="var(--deck)" stroke="var(--ink)" stroke-width="1.5"/>
+        <path d="M89 62 h10 M89 65 h7" stroke="var(--muted)" stroke-width="1.2"/>
+      </g>
+      <path d="M0 96 Q25 90 50 96 T100 96 T150 96 T200 96" stroke="var(--pip)" stroke-width="1.5" fill="none" opacity=".5"/>
+    </svg>
+    <div>
+      <p class="label" data-t="statusLabel"></p>
+      <p class="status" data-t="status"></p>
+      <p class="label" data-t="questionLabel"></p>
+      <p class="question"><q data-t="question"></q></p>
+    </div>
+  </section>
+
+  <section>
+    <h2 data-t="mapTitle"></h2>
+    <p class="sub" data-t="mapSub"></p>
+    <svg class="map" id="map" viewBox="0 30 600 450" role="img" aria-labelledby="mapDesc">
+      <desc id="mapDesc" data-t="mapDesc"></desc>
+      <g id="frame"></g>
+      <path class="ghost" id="ghost"/>
+      <path class="trail" id="trail"/>
+      <g id="days"></g>
+      <g id="flags"></g>
+      <g id="me">
+        <circle r="11" fill="var(--fur)"/>
+        <circle cx="-6" cy="-9" r="3.5" fill="var(--fur)"/>
+        <circle cx="6" cy="-9" r="3.5" fill="var(--fur)"/>
+        <ellipse cy="3" rx="6" ry="4" fill="var(--fur-light)"/>
+        <ellipse cy="1.5" rx="2" ry="1.4" fill="var(--ink)"/>
+      </g>
+    </svg>
+    <div class="controls">
+      <button type="button" class="btn" id="play" data-t="play"></button>
+      <input type="range" id="scrub" min="0" value="0" aria-label="Day">
+    </div>
+    <div class="readout" aria-live="polite">
+      <time id="rdDate"></time>
+      <span class="counts" id="rdCounts"></span>
+    </div>
+  </section>
+
+  <section>
+    <h2 data-t="legsTitle"></h2>
+    <p class="sub" data-t="legsSub"></p>
+    <div class="legs" id="legs"></div>
+  </section>
+
+  <section>
+    <h2 data-t="qTitle"></h2>
+    <p class="sub" data-t="qSub"></p>
+    <ol class="qs" id="qs"></ol>
+  </section>
+
+  <footer class="rules" id="rules"></footer>
+</main>
+
+<script>
+// Filled in by path.py. PATH has one entry per day: how many acts went to each flow.
+// No titles and no journal text, so the page can be shared.
+const PATH = __PATH__;
+const CONF = __CONF__;
+
+const ORDER = ["move", "absorb", "tend", "still", "create", "reach"];   // opposites sit 180 degrees apart
+const PAIRS = [["move", "still"], ["absorb", "create"], ["tend", "reach"]];
+const CX = 300, CY = 252, R = 208, PR = 390;
+const ANG = {}; ORDER.forEach((f, i) => ANG[f] = (-60 + 60 * i) * Math.PI / 180);
+const LEG_PIPS = 14;
+
+const MON_EN = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const UI = {
+  en: {
+    statusLabel: "Status", questionLabel: "Question now",
+    mapTitle: "The path",
+    mapSub: "Each day leans toward the flows its acts went to, and carries some of the day before, so the line reads as a route. The otter marks the day you have scrubbed to.",
+    mapDesc: "A line wandering inside a hexagon of six flows, drawn from day-by-day counts.",
+    play: "Play", pause: "Pause",
+    names: { move: "Move", still: "Still", absorb: "Absorb", create: "Create", tend: "Tend", reach: "Reach" },
+    nothing: "nothing recorded",
+    legsTitle: "Stretches",
+    legsSub: "The same route cut into stretches. Squares are things done per week, so short and long stretches compare fairly.",
+    perWeek: "per week",
+    qTitle: "Questions so far",
+    qSub: "The flags on the path. The route is the questions I was asking, more than the things I got done.",
+    before: "before this path",
+    date: d => d.getDate() + " " + MON_EN[d.getMonth()] + " " + d.getFullYear(),
+    short: d => d.getDate() + " " + MON_EN[d.getMonth()],
+    range: (a, b) => a.getDate() + " " + MON_EN[a.getMonth()] + " – " + b.getDate() + " " + MON_EN[b.getMonth()] + " " + b.getFullYear()
+  },
+  ko: {
+    statusLabel: "상태", questionLabel: "지금의 질문",
+    mapTitle: "지나온 길",
+    mapSub: "하루는 그날 한 일이 향한 흐름 쪽으로 기울고, 전날의 기울기를 조금 이어받는다. 그래서 선이 점이 아니라 길로 읽힌다. 수달은 지금 고른 날에 있다.",
+    mapDesc: "여섯 흐름이 놓인 육각형 안을 날짜별 기록을 따라 걷는 선.",
+    play: "재생", pause: "멈춤",
+    names: { move: "움직이기", still: "머물기", absorb: "받아들이기", create: "만들기", tend: "돌보기", reach: "다가가기" },
+    nothing: "기록 없음",
+    legsTitle: "구간",
+    legsSub: "같은 길을 몇 구간으로 나눴다. 칸은 주당 한 일의 수라서 짧은 구간과 긴 구간을 나란히 볼 수 있다.",
+    perWeek: "주당",
+    qTitle: "지금까지의 질문",
+    qSub: "길 위의 깃발. 내가 걸어온 길은 해낸 일보다 그때 던지던 질문에 더 가깝다.",
+    before: "이 길 이전",
+    date: d => d.getFullYear() + "년 " + (d.getMonth() + 1) + "월 " + d.getDate() + "일",
+    short: d => (d.getMonth() + 1) + "월 " + d.getDate() + "일",
+    range: (a, b) => a.getFullYear() + "년 " + (a.getMonth() + 1) + "월 " + a.getDate() + "일 – " + (b.getMonth() + 1) + "월 " + b.getDate() + "일"
+  }
+};
+const LANGS = (CONF.languages || ["en"]).filter(l => UI[l]);
+const LEGS = CONF.legs || [];
+const QS = CONF.questions || [];
+// Config text is either a plain string or {en: ..., ko: ...}.
+const pick = (v, l) => v == null ? "" : typeof v === "string" ? v : (v[l] ?? v[LANGS[0]] ?? "");
+
+const NS = "http://www.w3.org/2000/svg";
+const $ = id => document.getElementById(id);
+const day = s => new Date(s + "T00:00:00");
+
+function points() {
+  let px = 0, py = 0;
+  return PATH.map(d => {
+    let vx = 0, vy = 0, n = 0;
+    Object.keys(d.c).forEach(f => { const k = d.c[f]; vx += k * Math.cos(ANG[f]); vy += k * Math.sin(ANG[f]); n += k; });
+    px = px * .62 + vx / (n + 2) * .38; py = py * .62 + vy / (n + 2) * .38;
+    return { x: CX + px * PR, y: CY + py * PR, d: d.d, n };
+  });
+}
+const PTS = points();
+
+function curve(pts) {     // Catmull-Rom through the points, as cubic Beziers
+  if (pts.length < 2) return "";
+  let s = "M" + pts[0].x.toFixed(1) + " " + pts[0].y.toFixed(1);
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[Math.max(i - 1, 0)], p1 = pts[i], p2 = pts[i + 1], p3 = pts[Math.min(i + 2, pts.length - 1)];
+    const c1x = p1.x + (p2.x - p0.x) / 6, c1y = p1.y + (p2.y - p0.y) / 6;
+    const c2x = p2.x - (p3.x - p1.x) / 6, c2y = p2.y - (p3.y - p1.y) / 6;
+    s += "C" + c1x.toFixed(1) + " " + c1y.toFixed(1) + " " + c2x.toFixed(1) + " " + c2y.toFixed(1) + " " + p2.x.toFixed(1) + " " + p2.y.toFixed(1);
+  }
+  return s;
+}
+
+function el(tag, attrs) {
+  const e = document.createElementNS(NS, tag);
+  Object.keys(attrs).forEach(k => e.setAttribute(k, attrs[k]));
+  return e;
+}
+
+let IDX = PATH.length - 1, TIMER = null, lang = LANGS[0];
+
+function drawFrame(t) {
+  const g = $("frame"); g.replaceChildren();
+  const hex = ORDER.map(f => (CX + R * Math.cos(ANG[f])).toFixed(1) + "," + (CY + R * Math.sin(ANG[f])).toFixed(1)).join(" ");
+  g.appendChild(el("polygon", { class: "ring", points: hex }));
+  PAIRS.forEach(([a, b]) => g.appendChild(el("line", { class: "axis",
+    x1: CX + R * Math.cos(ANG[a]), y1: CY + R * Math.sin(ANG[a]), x2: CX + R * Math.cos(ANG[b]), y2: CY + R * Math.sin(ANG[b]) })));
+  ORDER.forEach(f => {
+    const c = Math.cos(ANG[f]), s = Math.sin(ANG[f]);
+    const tx = el("text", { x: (CX + (R + 22) * c).toFixed(1), y: (CY + (R + 22) * s + 6).toFixed(1),
+      "text-anchor": c > .3 ? "start" : c < -.3 ? "end" : "middle" });
+    tx.textContent = t.names[f];
+    g.appendChild(tx);
+  });
+  $("ghost").setAttribute("d", curve(PTS));
+}
+
+function drawDays() {
+  const g = $("days"); g.replaceChildren();
+  PTS.forEach(p => { if (p.n) g.appendChild(el("circle", { class: "day", cx: p.x.toFixed(1), cy: p.y.toFixed(1), r: (1.2 + Math.sqrt(p.n) * .9).toFixed(1), opacity: ".55" })); });
+}
+
+function drawFlags() {
+  const g = $("flags"); g.replaceChildren();
+  QS.forEach((q, k) => {
+    const i = PATH.findIndex(x => x.d === q.date);
+    if (i < 0) return;
+    const p = PTS[i];
+    const f = el("g", { class: "flag" + (i > IDX ? " ahead" : ""), transform: "translate(" + p.x.toFixed(1) + " " + p.y.toFixed(1) + ")" });
+    f.appendChild(el("line", { x1: 0, y1: 0, x2: 0, y2: -26, stroke: "var(--ink)", "stroke-width": 1.5 }));
+    f.appendChild(el("rect", { x: 0, y: -34, width: 18, height: 14, rx: 2 }));
+    const tx = el("text", { x: 9, y: -23.5, "text-anchor": "middle" }); tx.textContent = String(k + 1);
+    f.appendChild(tx);
+    g.appendChild(f);
+  });
+}
+
+function drawNow(t) {
+  if (!PATH.length) return;
+  $("trail").setAttribute("d", curve(PTS.slice(0, IDX + 1)));
+  const p = PTS[IDX];
+  $("me").setAttribute("transform", "translate(" + p.x.toFixed(1) + " " + p.y.toFixed(1) + ")");
+  drawFlags();
+  $("scrub").value = IDX;
+  const d = PATH[IDX];
+  $("rdDate").textContent = t.date(day(d.d));
+  const parts = ORDER.filter(f => d.c[f]).map(f => t.names[f] + " " + d.c[f]);
+  $("rdCounts").textContent = parts.length ? parts.join(" · ") : t.nothing;
+}
+
+function gauge(t, f, v, side) {
+  const div = document.createElement("div");
+  div.className = "flow " + side;
+  const n = Math.round(v);
+  let pips = "";
+  for (let i = 0; i < LEG_PIPS; i++) pips += '<i class="pip' + (i < n ? " on" : "") + '"></i>';
+  const count = '<span class="count">' + v.toFixed(1) + "</span>";
+  div.innerHTML = '<div class="name"></div><div class="pips">' + pips + "</div>";
+  const nm = div.firstChild;
+  const label = document.createElement("span"); label.textContent = t.names[f];
+  if (side === "left") { nm.insertAdjacentHTML("beforeend", count); nm.appendChild(label); }
+  else { nm.appendChild(label); nm.insertAdjacentHTML("beforeend", count); }
+  return div;
+}
+
+function drawLegs(t) {
+  const box = $("legs"); box.replaceChildren();
+  box.closest("section").hidden = !LEGS.length;
+  LEGS.forEach(leg => {
+    const days = PATH.filter(x => x.d >= leg.from && x.d <= leg.to), sum = {};
+    if (!days.length) return;
+    days.forEach(x => Object.keys(x.c).forEach(f => sum[f] = (sum[f] || 0) + x.c[f]));
+    const art = document.createElement("article");
+    art.className = "leg";
+    art.innerHTML = '<div class="leg-head"><h3></h3><time></time></div><p></p><div class="pairs"></div>';
+    art.querySelector("h3").textContent = pick(leg.title, lang);
+    art.querySelector("time").textContent = t.short(day(leg.from)) + " – " + t.short(day(leg.to)) + " · " + t.perWeek;
+    art.querySelector("p").textContent = pick(leg.text, lang);
+    const pairs = art.querySelector(".pairs");
+    PAIRS.forEach(([l, r]) => {
+      const row = document.createElement("div"); row.className = "pair";
+      row.append(gauge(t, l, (sum[l] || 0) * 7 / days.length, "left"), gauge(t, r, (sum[r] || 0) * 7 / days.length, "right"));
+      pairs.appendChild(row);
+    });
+    box.appendChild(art);
+  });
+}
+
+function drawQs(t) {
+  const ol = $("qs"); ol.replaceChildren();
+  ol.closest("section").hidden = !QS.length;
+  QS.forEach((q, i) => {
+    const li = document.createElement("li");
+    if (i === QS.length - 1) li.className = "now";
+    const onPath = PATH.some(x => x.d === q.date);
+    li.innerHTML = '<time datetime="' + q.date + '"><span class="mark"></span><span></span></time><q></q>';
+    li.querySelector(".mark").textContent = onPath ? "[" + (i + 1) + "]" : "";
+    li.querySelector("time span:last-child").textContent = t.date(day(q.date)) + (onPath ? "" : " · " + t.before);
+    li.querySelector("q").textContent = pick(q.text, lang);
+    ol.appendChild(li);
+  });
+}
+
+function stop() { if (TIMER) { clearInterval(TIMER); TIMER = null; } $("play").textContent = UI[lang].play; }
+
+function render() {
+  const t = UI[lang];
+  document.documentElement.lang = lang;
+  document.querySelectorAll("[data-t]").forEach(e => {
+    const k = e.dataset.t;
+    e.textContent = k in t ? t[k] : pick(CONF[k], lang);
+  });
+  document.querySelectorAll(".lang button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lang === lang)));
+  if (PATH.length) $("dates").textContent = t.range(day(PATH[0].d), day(PATH[PATH.length - 1].d));
+  $("play").textContent = TIMER ? t.pause : t.play;
+  const rules = $("rules"); rules.replaceChildren();
+  (CONF.notes || []).forEach(n => { const p = document.createElement("p"); p.textContent = pick(n, lang); rules.appendChild(p); });
+  rules.hidden = !(CONF.notes || []).length;
+  drawFrame(t); drawDays(); drawNow(t); drawLegs(t); drawQs(t);
+}
+
+$("scrub").max = Math.max(PATH.length - 1, 0);
+$("scrub").addEventListener("input", e => { stop(); IDX = +e.target.value; drawNow(UI[lang]); });
+$("play").addEventListener("click", () => {
+  if (TIMER) { stop(); return; }
+  if (IDX >= PATH.length - 1) IDX = 0;
+  $("play").textContent = UI[lang].pause;
+  const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  TIMER = setInterval(() => {
+    IDX = reduce ? PATH.length - 1 : IDX + 1;
+    drawNow(UI[lang]);
+    if (IDX >= PATH.length - 1) stop();
+  }, 90);
+});
+$("langs").hidden = LANGS.length < 2;
+document.querySelectorAll(".lang button").forEach(b => { b.hidden = !LANGS.includes(b.dataset.lang); });
+try { const saved = localStorage.getItem("otter-lang"); if (LANGS.includes(saved)) lang = saved; } catch (e) {}
+document.querySelectorAll(".lang button").forEach(b => b.addEventListener("click", () => {
+  lang = b.dataset.lang;
+  try { localStorage.setItem("otter-lang", lang); } catch (e) {}
+  render();
+}));
+render();
+</script>

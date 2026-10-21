@@ -1,0 +1,27 @@
+{
+  "_note": "Defaults that read the sample journal. Copy this file to settings.local.json and change what differs; the local file is merged over this one key by key and is never committed.",
+
+  "journal_dirs": ["sample/journal"],
+  "vault_root": null,
+  "obsidian_vault": null,
+  "calendar_json": null,
+  "calendar_contexts": [],
+  "output": "out/index.html",
+  "path_output": "out/path.html",
+
+  "sections": {
+    "workout": "Workout",
+    "reflections": "Reflections",
+    "todos": "Todo",
+    "captures": "Captures"
+  },
+  "workout_record_labels": ["Done", "Record"],
+  "workout_rest": "rest\\b|off\\b",
+  "workout_table_column": null,
+  "workout_table_skip": "^(-|none|skipped)$",
+  "workout_checklists": [["Mobility", "move"], ["Stretch", "still"]],
+  "todo_suffix": "\\s*\\(carried \\d+\\)\\s*$",
+
+  "self_judgment": "\\bshould have\\b|\\bguilty\\b|\\bashamed\\b|\\bhate myself\\b|\\bso lazy\\b|\\bdisappointed in myself\\b|\\bregret\\b",
+  "kind_letter": "letter to myself|kind note to self"
+}

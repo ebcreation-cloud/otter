@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>otter</title>
+<style>
+  :root {
+    --bg:#FEF4E8; --panel:#fffaf3; --ink:#283E56; --muted:#7d8a99; --line:#e4d9cb;
+    --water:#cfe6ea; --shadow:0 1px 2px rgba(40,62,86,.06),0 8px 24px rgba(40,62,86,.07);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#141c26; --panel:#1c2634; --ink:#e8eef5; --muted:#8b9aab; --line:#2b3849;
+            --water:#22414a; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35); }
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); line-height:1.55;
+         font-family:-apple-system,"Pretendard","Apple SD Gothic Neo",Segoe UI,sans-serif; }
+  .wrap { max-width:1080px; margin:0 auto; padding:28px 20px 80px; }
+  header { display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; margin-bottom:6px; }
+  h1 { font-size:22px; margin:0; letter-spacing:.02em; font-weight:650; }
+  .tag { color:var(--muted); font-size:12.5px; }
+  .spacer { flex:1; }
+  .controls { display:flex; gap:6px; align-items:center; }
+  button { font:inherit; font-size:12.5px; color:var(--muted); background:var(--panel);
+           border:1px solid var(--line); border-radius:99px; padding:3px 11px; cursor:pointer; }
+  button[aria-pressed="true"] { color:var(--bg); background:var(--ink); border-color:var(--ink); }
+  .lede { color:var(--muted); font-size:13px; margin:0 0 20px; max-width:62ch; }
+  .stage { display:grid; grid-template-columns:minmax(320px,1fr) minmax(280px,1.05fr); gap:28px; align-items:start; }
+  @media (max-width:840px){ .stage{ grid-template-columns:1fr; } }
+  .wheelbox { position:relative; }
+  svg.wheel { width:100%; height:auto; display:block; overflow:visible; }
+  .wedge { cursor:pointer; transition:opacity .15s; }
+  .wedge:hover { opacity:.82; }
+  .wedge.dim { opacity:.25; }
+  .wlabel { font-size:11.5px; font-weight:600; letter-spacing:.04em; text-transform:uppercase; }
+  .wcount { font-size:10.5px; fill:var(--muted); }
+  .caption { text-align:center; color:var(--muted); font-size:12.5px; margin-top:2px; min-height:2.6em; }
+  .card { background:var(--panel); border:1px solid var(--line); border-radius:14px;
+          padding:14px 16px; margin-bottom:12px; box-shadow:var(--shadow); }
+  .card h2 { font-size:12px; margin:0 0 10px; letter-spacing:.07em; text-transform:uppercase; color:var(--muted); font-weight:650; }
+  .pair { margin:11px 0; }
+  .pair .names { display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:4px; }
+  .pair .names b { font-weight:600; }
+  .bar { display:flex; height:9px; border-radius:99px; overflow:hidden; background:var(--line); }
+  .bar i { display:block; }
+  .tilt { font-size:11.5px; color:var(--muted); margin-top:3px; }
+  .rowline { display:flex; justify-content:space-between; font-size:13px; padding:3px 0; }
+  .rowline span:last-child { color:var(--muted); font-variant-numeric:tabular-nums; }
+  .dots { display:flex; flex-wrap:wrap; gap:3px; margin-top:7px; }
+  .dot { width:11px; height:11px; border-radius:3px; background:var(--line); }
+  .dot.kind { background:#7FA98F; }
+  .dot.judge { background:#B08A6A; }
+  .dot.both { background:linear-gradient(135deg,#7FA98F 50%,#B08A6A 50%); }
+  .legend { font-size:11.5px; color:var(--muted); margin-top:6px; }
+  #panel .item { border-top:1px solid var(--line); padding:8px 0; font-size:13px; }
+  #panel .item:first-of-type { border-top:0; }
+  #panel .meta { color:var(--muted); font-size:11.5px; display:flex; gap:7px; flex-wrap:wrap; margin-top:2px; }
+  #panel a { color:inherit; text-decoration:none; border-bottom:1px solid var(--line); }
+  #panel a:hover { border-color:var(--ink); }
+  .chip { border:1px solid var(--line); border-radius:99px; padding:0 7px; }
+  .note-item { opacity:.85; font-style:italic; }
+  .empty { color:var(--muted); font-size:12.5px; }
+  footer { margin-top:26px; color:var(--muted); font-size:11.5px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>otter</h1>
+  <span class="tag" id="range"></span>
+  <span class="spacer"></span>
+  <div class="controls">
+    <button data-win="7">7d</button><button data-win="14">14d</button><button data-win="30">30d</button>
+    <button id="lang">한국어</button>
+  </div>
+</header>
+<p class="lede" id="lede"></p>
+
+<div class="stage">
+  <div>
+    <div class="wheelbox"><svg class="wheel" viewBox="0 0 460 460" id="wheel"></svg></div>
+    <p class="caption" id="caption"></p>
+  </div>
+  <div>
+    <div class="card"><h2 id="t-balance"></h2><div id="pairs"></div></div>
+    <div class="card"><h2 id="t-inward"></h2><div id="inward"></div></div>
+    <div class="card"><h2 id="t-outside"></h2><div id="outside"></div></div>
+  </div>
+</div>
+
+<div class="card" id="panel" style="margin-top:18px"></div>
+<footer id="foot"></footer>
+</div>
+
+<script>
+const DATA = __DATA__;
+
+const I18N = {
+  en: {
+    lede: "Six flows in three facing pairs. Size is what you actually did in the window, not a score. Outcomes are left out on purpose. Only things you chose to do are in here.",
+    move:"Move", still:"Still", absorb:"Absorb", create:"Create", tend:"Tend", reach:"Reach",
+    move_d:"Lifting, pilates, golf, running, walking hard",
+    still_d:"Meditation, stretching, massage, walking alone, rest",
+    absorb_d:"Reading, podcasts, German, work material, being coached",
+    create_d:"Writing, publishing, building things, the house",
+    tend_d:"The people already close to you",
+    reach_d:"New people, clients, calls, going outward",
+    balance:"Balance", inward:"Turned inward", outside:"Outside the wheel",
+    tilt_even:"even", tilt_to:"leaning to", nothing:"nothing logged",
+    kind:"Kind letter written", judge:"Self-judgment in the writing", kindLegend:"green = kind letter, brown = self-judgment, split = both. Counted, not scored.",
+    admin:"Admin", adminD:"done, but no flow", unsorted:"No rule yet", unsortedD:"tell me what these are",
+    acts:"acts", notes:"notes", picked:"Pick a wedge to read what is in it.",
+    open:"open note", nothing_in:"Nothing logged here in this window. That can mean a quiet stretch or a gap in what gets written down.",
+    sources:"Fed by", generated:"generated", window:"window",
+    m_float:"Floating. All three pairs have something in them.",
+    m_buzz:"Plenty of motion, little stillness this window.",
+    m_cozy:"More stillness than motion this window.",
+    m_alone:"A quiet window with people.",
+    m_nap:"Nothing logged in this window yet."
+  },
+  ko: {
+    lede: "마주보는 세 쌍, 여섯 흐름. 크기는 점수가 아니라 그 기간에 실제로 한 것. 결과는 일부러 안 넣었어. 네가 고를 수 있었던 것만 들어가.",
+    move:"움직임", still:"고요", absorb:"들이기", create:"내보내기", tend:"가까이", reach:"넓히기",
+    move_d:"근력, 필라테스, 골프, 달리기",
+    still_d:"명상, 스트레칭, 마사지, 혼자 걷기, 쉼",
+    absorb_d:"독서, 팟캐스트, 독일어, 업무 자료, 코칭 받기",
+    create_d:"글, 발행, 만드는 것, 집",
+    tend_d:"이미 가까운 사람들",
+    reach_d:"새 사람, 클라이언트, 콜, 바깥으로",
+    balance:"균형", inward:"안쪽으로", outside:"바퀴 밖",
+    tilt_even:"고름", tilt_to:"쪽으로 기울어짐", nothing:"기록 없음",
+    kind:"착한 편지 쓴 날", judge:"자책이 적힌 날", kindLegend:"초록은 착한 편지, 갈색은 자책, 반반은 둘 다. 세기만 하고 점수는 안 매겨.",
+    admin:"살림·행정", adminD:"했지만 어느 흐름도 아닌 것", unsorted:"규칙 없음", unsortedD:"이게 뭔지 알려주면 규칙에 넣을게",
+    acts:"한 것", notes:"쓴 것", picked:"웨지를 눌러서 안에 뭐가 있는지 봐.",
+    open:"노트 열기", nothing_in:"이 기간엔 기록이 없어. 조용했던 걸 수도 있고, 적히지 않은 것일 수도 있어.",
+    sources:"근거", generated:"생성", window:"기간",
+    m_float:"떠 있음. 세 쌍에 다 뭔가 있어.",
+    m_buzz:"움직임은 많고 고요가 적은 기간.",
+    m_cozy:"고요가 움직임보다 많은 기간.",
+    m_alone:"사람은 조용했던 기간.",
+    m_nap:"이 기간엔 아직 기록이 없어."
+  }
+};
+
+const ORDER = ["move","absorb","tend","still","create","reach"];  // opposites land 180 apart
+const PAIRS = [["move","still"],["absorb","create"],["tend","reach"]];
+const SOURCE_LABEL = { calendar:"calendar", workout:"workout log", todo:"todo", pinboard:"pin", journal:"journal" };
+
+let LANG = localStorage.getItem("otter.lang") || "en";
+let WIN = +(localStorage.getItem("otter.win") || 14);
+let SEL = null;
+
+const T = k => I18N[LANG][k];
+const WEDGE = Object.fromEntries(DATA.wedges.map(w => [w.id, w]));
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function windowDays() {
+  const end = DATA.range.to, d = new Date(end + "T00:00:00");
+  d.setDate(d.getDate() - (WIN - 1));
+  const start = d.toISOString().slice(0, 10);
+  return Object.keys(DATA.days).filter(k => k >= start && k <= end).sort();
+}
+
+function collect() {
+  const days = windowDays();
+  const acts = {}, notes = {}, admin = [], unsorted = [];
+  ORDER.forEach(w => { acts[w] = []; notes[w] = []; });
+  days.forEach(k => {
+    const d = DATA.days[k];
+    (d.acts || []).forEach(it => it.wedge === "admin" ? admin.push(it) : (acts[it.wedge] || []).push(it));
+    (d.notes || []).forEach(it => { if (it.wedge && notes[it.wedge]) notes[it.wedge].push(it); });
+    (d.unsorted || []).forEach(it => unsorted.push(it));
+  });
+  return { days, acts, notes, admin, unsorted };
+}
+
+// ---- otter -------------------------------------------------------------
+// She floats on her back whatever the numbers say. No wilting, no dying:
+// a face that guilts you is a face you stop looking at.
+function otter(mood) {
+  const eyes = {
+    float: '<circle cx="-7" cy="-3" r="1.9"/><circle cx="7" cy="-3" r="1.9"/>',
+    buzz:  '<circle cx="-7" cy="-3" r="2.6"/><circle cx="7" cy="-3" r="2.6"/>',
+    cozy:  '<path d="M-10-3q3-3 6 0" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M4-3q3-3 6 0" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>',
+    alone: '<circle cx="-7" cy="-3" r="1.9"/><circle cx="7" cy="-3" r="1.9"/>',
+    nap:   '<path d="M-10-2q3 3 6 0" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M4-2q3 3 6 0" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>'
+  }[mood] || '<circle cx="-7" cy="-3" r="1.9"/><circle cx="7" cy="-3" r="1.9"/>';
+  return `
+  <g class="otter" transform="translate(230 236)">
+    <ellipse cx="0" cy="26" rx="52" ry="13" fill="var(--water)"/>
+    <g transform="translate(0 2)">
+      <ellipse cx="0" cy="12" rx="34" ry="17" fill="#9C7A5B"/>
+      <ellipse cx="0" cy="12" rx="22" ry="11" fill="#C6A483"/>
+      <path d="M-32 16q-14 6-22 2 8-2 12-8z" fill="#9C7A5B"/>
+      <g transform="translate(-9 6)"><ellipse rx="5" ry="3.4" fill="#8A6A4E"/></g>
+      <g transform="translate(9 6)"><ellipse rx="5" ry="3.4" fill="#8A6A4E"/></g>
+      <g transform="translate(20 -8)">
+        <circle cx="-11" cy="-13" r="6" fill="#8A6A4E"/><circle cx="9" cy="-15" r="6" fill="#8A6A4E"/>
+        <circle cx="0" cy="0" r="18" fill="#A9855F"/>
+        <ellipse cx="0" cy="7" rx="11" ry="8" fill="#EBD9C2"/>
+        <g fill="var(--ink)" color="var(--ink)">${eyes}</g>
+        <ellipse cx="0" cy="4" rx="3.1" ry="2.3" fill="#5A4230"/>
+        <path d="M0 6.4v2.6" stroke="#5A4230" stroke-width="1.2" stroke-linecap="round"/>
+        <path d="M-3 11q3 2.6 6 0" fill="none" stroke="#5A4230" stroke-width="1.2" stroke-linecap="round"/>
+        <g stroke="#5A4230" stroke-width=".8" opacity=".55" stroke-linecap="round">
+          <path d="M-11 5h-7"/><path d="M-11 8l-7 2"/><path d="M11 5h7"/><path d="M11 8l7 2"/>
+        </g>
+      </g>
+    </g>
+  </g>`;
+}
+
+function arc(cx, cy, r0, r1, a0, a1) {
+  const p = (r, a) => [cx + r * Math.cos(a), cy + r * Math.sin(a)];
+  const [x0,y0]=p(r1,a0), [x1,y1]=p(r1,a1), [x2,y2]=p(r0,a1), [x3,y3]=p(r0,a0);
+  const big = a1 - a0 > Math.PI ? 1 : 0;
+  return `M${x0} ${y0}A${r1} ${r1} 0 ${big} 1 ${x1} ${y1}L${x2} ${y2}A${r0} ${r0} 0 ${big} 0 ${x3} ${y3}Z`;
+}
+
+function drawWheel(c) {
+  const cx=230, cy=230, r0=74, rmax=196, gap=0.045;
+  const max = Math.max(1, ...ORDER.map(w => c.acts[w].length));
+  let s = "";
+  ORDER.forEach((id, i) => {
+    const n = c.acts[id].length;
+    const a0 = -Math.PI/2 + i*Math.PI/3 + gap, a1 = -Math.PI/2 + (i+1)*Math.PI/3 - gap;
+    const r1 = r0 + 20 + (rmax - r0 - 20) * Math.sqrt(n / max);
+    const mid = (a0 + a1) / 2, lx = cx + (r0 + 34) * Math.cos(mid), ly = cy + (r0 + 34) * Math.sin(mid);
+    const dim = SEL && SEL !== id ? " dim" : "";
+    s += `<g class="wedge${dim}" data-w="${id}">
+      <path d="${arc(cx,cy,r0+3,r0+18,a0,a1)}" fill="${WEDGE[id].color}" opacity=".28"/>
+      <path d="${arc(cx,cy,r0+3,r1,a0,a1)}" fill="${WEDGE[id].color}" opacity="${n?".82":".13"}"/>
+      <text class="wlabel" x="${lx}" y="${ly}" fill="#fff" text-anchor="middle" dominant-baseline="middle"
+            style="paint-order:stroke;stroke:${WEDGE[id].color};stroke-width:3px">${esc(T(id))}</text>
+      <text class="wcount" x="${cx+(r0+50)*Math.cos(mid)}" y="${cy+(r0+50)*Math.sin(mid)}"
+            text-anchor="middle" dominant-baseline="middle">${n}</text>
+    </g>`;
+  });
+  s += otter(mood(c));
+  document.getElementById("wheel").innerHTML = s;
+  document.querySelectorAll(".wedge").forEach(g =>
+    g.addEventListener("click", () => { SEL = SEL === g.dataset.w ? null : g.dataset.w; render(); }));
+}
+
+function mood(c) {
+  const n = id => c.acts[id].length;
+  const total = ORDER.reduce((a, id) => a + n(id), 0);
+  if (!total) return "nap";
+  if (n("move") >= n("still") * 2 + 2) return "buzz";
+  if (n("still") >= n("move") * 2 + 2) return "cozy";
+  if (n("tend") + n("reach") === 0) return "alone";
+  return "float";
+}
+
+function drawPairs(c) {
+  document.getElementById("pairs").innerHTML = PAIRS.map(([a, b]) => {
+    const na = c.acts[a].length, nb = c.acts[b].length, t = na + nb;
+    const pa = t ? Math.round(na / t * 100) : 50;
+    const tilt = !t ? T("nothing")
+      : Math.abs(pa - 50) < 12 ? T("tilt_even")
+      : (LANG === "ko" ? `${T(pa > 50 ? a : b)} ${T("tilt_to")}` : `${T("tilt_to")} ${T(pa > 50 ? a : b)}`);
+    return `<div class="pair">
+      <div class="names"><b style="color:${WEDGE[a].color}">${esc(T(a))} ${na}</b><b style="color:${WEDGE[b].color}">${nb} ${esc(T(b))}</b></div>
+      <div class="bar"><i style="width:${pa}%;background:${WEDGE[a].color}"></i><i style="width:${100-pa}%;background:${WEDGE[b].color}"></i></div>
+      <div class="tilt">${esc(tilt)}</div></div>`;
+  }).join("");
+}
+
+function drawInward(c) {
+  let kind = 0, judge = 0, dots = "";
+  c.days.forEach(k => {
+    const d = DATA.days[k];
+    if (d.selfKindness) kind++;
+    if (d.selfJudgment) judge++;
+    const cls = d.selfKindness && d.selfJudgment ? "both" : d.selfKindness ? "kind" : d.selfJudgment ? "judge" : "";
+    dots += `<div class="dot ${cls}" title="${k}"></div>`;
+  });
+  document.getElementById("inward").innerHTML =
+    `<div class="rowline"><span>${esc(T("kind"))}</span><span>${kind} / ${c.days.length}</span></div>
+     <div class="rowline"><span>${esc(T("judge"))}</span><span>${judge} / ${c.days.length}</span></div>
+     <div class="dots">${dots}</div><div class="legend">${esc(T("kindLegend"))}</div>`;
+}
+
+function drawOutside(c) {
+  document.getElementById("outside").innerHTML =
+    `<div class="rowline"><span>${esc(T("admin"))} <span class="tag">${esc(T("adminD"))}</span></span><span>${c.admin.length}</span></div>
+     <div class="rowline"><span>${esc(T("unsorted"))} <span class="tag">${esc(T("unsortedD"))}</span></span><span>${c.unsorted.length}</span></div>
+     ${c.unsorted.slice(0,6).map(i=>`<div class="legend">· ${esc(i.text.slice(0,58))}</div>`).join("")}`;
+}
+
+function noteLink(file) {
+  // Links open the note in Obsidian only when settings name the vault.
+  if (!file || !DATA.vault) return null;
+  return "obsidian://open?vault=" + encodeURIComponent(DATA.vault) +
+         "&file=" + encodeURIComponent(file.replace(/\.md$/, ""));
+}
+
+function drawPanel(c) {
+  const el = document.getElementById("panel");
+  if (!SEL) { el.innerHTML = `<h2>${esc(T("balance"))}</h2><div class="empty">${esc(T("picked"))}</div>`; return; }
+  const acts = c.acts[SEL], notes = c.notes[SEL];
+  const srcs = [...new Set(acts.map(a => SOURCE_LABEL[a.source] || a.source))];
+  let h = `<h2 style="color:${WEDGE[SEL].color}">${esc(T(SEL))} &middot; ${acts.length} ${esc(T("acts"))} &middot; ${notes.length} ${esc(T("notes"))}</h2>
+           <div class="legend" style="margin:-4px 0 10px">${esc(T(SEL + "_d"))}${srcs.length ? " &middot; " + esc(T("sources")) + ": " + esc(srcs.join(", ")) : ""}</div>`;
+  if (!acts.length && !notes.length) return void (el.innerHTML = h + `<div class="empty">${esc(T("nothing_in"))}</div>`);
+  const row = (it, isNote) => {
+    const link = noteLink(it.note);
+    return `<div class="item${isNote ? " note-item" : ""}">${esc(it.text)}
+      <div class="meta"><span>${it.date}</span>
+      ${it.time ? `<span>${esc(it.time)}</span>` : ""}
+      <span class="chip">${esc(SOURCE_LABEL[it.source] || it.source)}</span>
+      ${it.context && it.context !== "personal" ? `<span class="chip">${esc(it.context)}</span>` : ""}
+      ${link ? `<a href="${link}">${esc(T("open"))}</a>` : ""}</div></div>`;
+  };
+  h += acts.slice().reverse().map(i => row(i, false)).join("");
+  h += notes.slice().reverse().map(i => row(i, true)).join("");
+  el.innerHTML = h;
+}
+
+function render() {
+  document.documentElement.lang = LANG;
+  const c = collect();
+  document.getElementById("range").textContent = `${DATA.range.from} .. ${DATA.range.to}`;
+  document.getElementById("lede").textContent = T("lede");
+  document.getElementById("t-balance").textContent = T("balance");
+  document.getElementById("t-inward").textContent = T("inward");
+  document.getElementById("t-outside").textContent = T("outside");
+  document.getElementById("caption").textContent = T("m_" + ({buzz:"buzz",cozy:"cozy",alone:"alone",nap:"nap",float:"float"})[mood(c)]);
+  document.getElementById("lang").textContent = LANG === "en" ? "한국어" : "English";
+  document.querySelectorAll("[data-win]").forEach(b => b.setAttribute("aria-pressed", +b.dataset.win === WIN));
+  document.getElementById("foot").textContent = `${T("window")} ${WIN}d · ${c.days.length} days · ${T("generated")} ${DATA.generated}`;
+  drawWheel(c); drawPairs(c); drawInward(c); drawOutside(c); drawPanel(c);
+}
+
+document.querySelectorAll("[data-win]").forEach(b =>
+  b.addEventListener("click", () => { WIN = +b.dataset.win; localStorage.setItem("otter.win", WIN); render(); }));
+document.getElementById("lang").addEventListener("click", () => {
+  LANG = LANG === "en" ? "ko" : "en"; localStorage.setItem("otter.lang", LANG); render();
+});
+render();
+</script>
+</body>
+</html>
