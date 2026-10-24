@@ -11,6 +11,12 @@ each act into one of six flows, and draws two pages:
   flows day by day, with the questions you were asking along the way. It holds no
   journal text, so you can share it.
 
+No Python, or no Markdown journal? [PROMPT.md](PROMPT.md) has a prompt that makes a
+weekly otter page from any journal with Claude, in English and Korean. There is also a
+[short guide](https://claude.ai/artifact/5Y4NfRYxxwtLZShJoAW43e). That version counts
+what happened in your entries, keeps a list of your wants and questions, and marks
+which ones came true.
+
 Six flows in three facing pairs:
 
 | pair | | |
